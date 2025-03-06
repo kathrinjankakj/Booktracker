@@ -24,4 +24,4 @@ If you have any problems or questions contact us [here](mailto:weesslena@gmail.c
 There's always possibilities to extend this project and we're happy to do so, but it will take its time.
 
 ## Authors
-This project was created by Kathrin Janka and Lena Weeß as a submission for a university project (course "Agile Webanwendungen mit Python" at "Technische Hochschule Augsburg")
+This project was created by Kathrin Janka as a submission for a university project (course "Agile Webanwendungen mit Python" at "Technische Hochschule Augsburg")
