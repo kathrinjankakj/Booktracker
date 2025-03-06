@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="app-container">
+    <nav class="navbar">
+        <div class="logo">📚 Mein Profil</div>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+                <a href="{% url 'overview' %}">
+                    <input class="button" type="button" value="Home">
+                </a>
+                <a href="{% url 'user_settings' %}">
+                    <input class="button" type="button" value="Einstellungen">
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="profile">
+        <aside class="profile-container">
+            <h1>Profilinformationen</h1>
+            <form id="profile-form" method="POST" action="{% url 'profile' %}">
+                {% csrf_token %}
+                <div>
+                    <p class="benutzername"><strong>Benutzername:</strong> {{ user.username }}</p>
+                    <label for="name"><strong>Name: </strong></label>
+                    {% if not user.first_name %}
+                        <input class="input" type="text" id="name" placeholder="Ihr Vorname" name="name"
+                               value="{{ user.first_name }}">
+                    {% else %}
+                        <span>{{ user.first_name }}</span>
+                    {% endif %}
+                    {% if not user.last_name %}
+                        <input class="input" type="text" id="name" placeholder="Ihr Nachname" name="last_name"
+                               value="{{ user.last_name }}">
+                    {% else %}
+                        <span>{{ user.last_name }}</span>
+                    {% endif %}
+                </div>
+                <br/>
+                <div>
+                    <label for="email">E-Mail:</label>
+                    {% if not user.email %}
+                        <input class="input" type="email" id="email" placeholder="Ihre E-Mail" name="email"
+                               value="{{ user.email }}">
+                    {% else %}
+                        <span>{{ user.email }}</span>
+                    {% endif %}
+                </div>
+                {% if not user.first_name or not user.last_name or not user.email %}
+                    <button class="button2" type="submit">Speichern</button>
+                {% endif %}
+            </form>
+        </aside>
+        <main class="bücherprofilep">
+            <div class="booklayoutp">
+                <h2>Meine Bücher</h2>
+                <h2>Begonnen</h2>
+                {% if begonnene_buecher %}
+                    <ul class="my-books">
+                        {% for eintrag in begonnene_buecher %}
+                            <li>{{ eintrag.book.titel }} ({{ eintrag.book.autor }})</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Noch keine Bücher begonnen.</p>
+                {% endif %}
+            </div>
+            <h2>Geplant</h2>
+            <div class="booklayoutp">
+                {% if geplante_buecher %}
+                    <ul>
+                        {% for eintrag in geplante_buecher %}
+                            <li>{{ eintrag.book.titel }} ({{ eintrag.book.autor }})</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Noch keine Bücher geplant.</p>
+                {% endif %}
+            </div>
+            <div class="booklayoutp">
+                <h2>Gelesen</h2>
+                {% if gelesene_buecher %}
+                    <ul class="my-books">
+                        {% for eintrag in gelesene_buecher %}
+                            <li>{{ eintrag.book.titel }} ({{ eintrag.book.autor }})</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Noch keine Bücher gelesen.</p>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+<footer id="footer">
+    <ul>
+        <li>Danke fürs Vorbeischauen! 👋🏻</li>
+        <li><a href="https://www.tha.de/Service/Impressum.page">Impressum</a></li>
+        <li><a href="https://www.tha.de/Service/Datenschutz.page">Datenschutz</a></li>
+        <li><a href="mailto:weesslena@gmail.com;kathrin.janka@web.de?subject=Booktracker">Kontakt</a></li>
+    </ul>
+</footer>
+<script src="../../static/js/script.js"></script>
+</body>
+</html>

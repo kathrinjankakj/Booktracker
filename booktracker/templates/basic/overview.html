@@ -1,0 +1,269 @@
+{% load custom_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buch-Tracker</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="app-container">
+    <nav class="navbar">
+        <div class="login-logout">
+            {% if user.is_authenticated %}
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <input class="button" type="submit" value="Log out">
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">
+                    <input class="button" type="button" value="Log in">
+                </a>
+                | <a href="{% url 'register' %}">
+                <input class="button" type="button" value="Register">
+            </a>
+            {% endif %}
+        </div>
+        <div class="logo">📚 Buch-Tracker</div>
+        <div class="nav-rechts">
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}">
+                    <input class="button" type="button" value="Profil">
+                </a>
+                <a href="{% url 'user_settings' %}">
+                    <input class="button" type="button" value="Einstellungen">
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="body">
+        <div class="content">
+            <!--<h1>My Gallery</h1>-->
+            <aside class="sidebar">
+                <form method="GET" action="{% url 'overview' %}">
+                    <input type="text" id="search" name="search" placeholder="Suchen..." value="{{ search_query }}">
+                    <select name="category">
+                        <option value="" {% if not selected_category %}selected{% endif %}>Alle Kategorien</option>
+                        <option value="Romanze" {% if selected_category == "Romanze" %}selected{% endif %}>Romanze
+                        </option>
+                        <option value="Historischer Roman"
+                                {% if selected_category == "Historischer Roman" %}selected{% endif %}>Historischer Roman
+                        </option>
+                        <option value="Krimi" {% if selected_category == "Krimi" %}selected{% endif %}>Krimi</option>
+                        <option value="Thriller" {% if selected_category == "Thriller" %}selected{% endif %}>Thriller
+                        </option>
+                        <option value="Fantasy" {% if selected_category == "Fantasy" %}selected{% endif %}>Fantasy
+                        </option>
+                        <option value="Science Fiction"
+                                {% if selected_category == "Science Fiction" %}selected{% endif %}>Science Fiction
+                        </option>
+                        <option value="Sachbuch" {% if selected_category == "Sachbuch" %}selected{% endif %}>Sachbuch
+                        </option>
+                        <option value="Biografie" {% if selected_category == "Biografie" %}selected{% endif %}>
+                            Biografie
+                        </option>
+                        <option value="Sonstige" {% if selected_category == "Sonstige" %}selected{% endif %}>Sonstige
+                        </option>
+                    </select>
+                    <button class="button2" type="submit">Suchen</button>
+                </form>
+                {% if request.GET.search or request.GET.category %}
+                    <a href="{% url 'overview' %}">
+                        <button class="button2" type="button">Zurücksetzen</button>
+                    </a>
+                {% endif %}
+                <br/>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'upload' %}">
+                        <input class="button2" type="button" value="Hinzufügen">
+                    </a>
+                {% endif %}
+                <h2>Empfohlene Bücher</h2>
+                <ul id="recommendations">
+                    {% for buch in empfohlene_buecher %}
+                        <li>{{ buch.titel }} - {{ buch.autor }}</li>
+                    {% empty %}
+                        <li>Keine Bücher verfügbar.</li>
+                    {% endfor %}
+                </ul>
+            </aside>
+
+            <main>
+                <div id="book-list">
+                    <ul>
+                        {% for bo in books %}
+                            <div class="booklayout">
+                                {% if bo.buchcover != empty %}
+                                    <li class="images"><img class="images" src="{{ bo.buchcover.url }}"
+                                                            alt="Cover von {{ bo.titel }}."></li>
+                                {% else %}
+                                    <li class="images"><img class="images" src="/images/default.png"
+                                                            alt="No cover yet.">
+                                    </li>
+                                {% endif %}
+                                <div class="book_details">
+                                    <li id="book_title">{{ bo.titel }}</li>
+                                    <li class="book_text">Autor: {{ bo.autor }}</li>
+                                    {% if bo.erscheinungsdatum != empty %}
+                                        <li class="book_text">Erscheinungsdatum: {{ bo.erscheinungsdatum }}</li>
+                                    {% endif %}
+                                    {% if bo.beschreibung != empty %}
+                                        <li class="book_text">Beschreibung: {{ bo.beschreibung }}</li>
+                                    {% endif %}
+                                    {% if bo.sprache != empty %}
+                                        <li class="book_text">Sprache: {{ bo.sprache }}</li>
+                                    {% endif %}
+                                    {% if bo.seitenanzahl != empty %}
+                                        <li class="book_text">Seitenzahl: {{ bo.seitenanzahl }}</li>
+                                    {% endif %}
+                                    {% if bo.kategorie != empty %}
+                                        <li class="book_text">Kategorie: {{ bo.kategorie }}</li>
+                                    {% endif %}
+                                    {% if user.is_authenticated %}
+                                        <!-- Tracker abhängig vom Nutzerstatus -->
+                                        {% with user_gallery=user_gallery_data|dict_key:bo.id %}
+                                            {% if user_gallery %}
+                                                <div class="book_progress_buttons">
+                                                    <!-- Wenn Geplant -->
+                                                    {% if user_gallery.tracker == "Geplant" %}
+                                                        <form method="POST" action="{% url 'update_progress' bo.id %}">
+                                                            {% csrf_token %}
+                                                            <button class="button2" type="submit" name="tracker"
+                                                                    value="Begonnen">Begonnen
+                                                            </button>
+                                                            <button class="button2" type="submit" name="tracker"
+                                                                    value="None">
+                                                                Zurücksetzen
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+
+                                                    <!-- Wenn Begonnen -->
+                                                    {% if user_gallery.tracker == "Begonnen" %}
+                                                        <form method="POST" action="{% url 'update_progress' bo.id %}">
+                                                            {% csrf_token %}
+                                                            <li>
+                                                                <label for="begonnen">Startdatum:</label>
+                                                                {% if not user_gallery.begonnen %}
+                                                                    <input class="input" type="date" name="begonnen"
+                                                                           value="{{ today|date:'Y-m-d' }}">
+                                                                {% else %}
+                                                                    <span>{{ user_gallery.begonnen|date:'d.m.Y' }}</span>
+                                                                {% endif %}
+                                                            </li>
+                                                            <li>
+                                                                <label for="fortschritt">Aktuelle Seite:</label>
+                                                                <input type="number" name="fortschritt" min="1"
+                                                                       max="{{ bo.seitenanzahl }}"
+                                                                       value="{{ user_gallery.fortschritt|default:'' }}">
+                                                            </li>
+                                                            <button class="button2" type="submit" name="tracker"
+                                                                    value="Begonnen">Aktualisieren
+                                                            </button>
+                                                            <button class="button2" type="submit" name="tracker"
+                                                                    value="Gelesen">Gelesen
+                                                            </button>
+                                                            <button class="button2" type="submit" name="tracker"
+                                                                    value="None">
+                                                                Zurücksetzen
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+
+                                                    <!-- Wenn Gelesen -->
+                                                    {% if user_gallery.tracker == "Gelesen" %}
+                                                        <li class="book_text">Bereits gelesen
+                                                            am {{ user_gallery.begonnen|date:'d.m.Y' }}</li>
+                                                        <form method="POST" action="{% url 'update_progress' bo.id %}">
+                                                            {% csrf_token %}
+                                                            <li>
+                                                                <label for="bewertung">Bewertung:</label>
+                                                                {% if not user_gallery.bewertung %}
+                                                                    <input list="sterne" name="bewertung">
+                                                                    <datalist id="sterne">
+                                                                        <option value="Nicht bewertet">
+                                                                        <option value="1 Stern">
+                                                                        <option value="2 Sterne">
+                                                                        <option value="3 Sterne">
+                                                                        <option value="4 Sterne">
+                                                                        <option value="5 Sterne">
+                                                                    </datalist>
+                                                                    <button class="button2" type="submit" name="tracker"
+                                                                            value="Gelesen">Aktualisieren
+                                                                    </button>
+                                                                {% else %}
+                                                                    <span>{{ user_gallery.bewertung }}</span>
+                                                                {% endif %}
+                                                            </li>
+                                                            <li>
+                                                                <label for="inhaltsfokus">Inhaltlicher Favorit:</label>
+                                                                {% if not user_gallery.inhaltsfokus %}
+                                                                    <input class="input" list="inhalt"
+                                                                           name="inhaltsfokus">
+                                                                    <datalist id="inhalt">
+                                                                        <option value="Charakterentwicklung">
+                                                                        <option value="Spannung">
+                                                                        <option value="Themenvielfalt">
+                                                                        <option value="Schreibstil">
+                                                                        <option value="Botschaft">
+                                                                        <option value="Alles">
+                                                                    </datalist>
+                                                                    <button class="button2" type="submit" name="tracker"
+                                                                            value="Gelesen">Aktualisieren
+                                                                    </button>
+                                                                {% else %}
+                                                                    <span>{{ user_gallery.inhaltsfokus }}</span>
+                                                                {% endif %}
+                                                            </li>
+                                                            <button class="button2" type="submit" name="tracker"
+                                                                    value="None">
+                                                                Zurücksetzen
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+
+                                                    {% if user_gallery.tracker == "None" %}
+                                                        <form method="POST" action="{% url 'update_progress' bo.id %}">
+                                                            {% csrf_token %}
+                                                            <button class="button2" type="submit" name="tracker"
+                                                                    value="Geplant">Geplant
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <!-- Falls kein Tracking existiert -->
+                                                <form method="POST" action="{% url 'update_progress' bo.id %}">
+                                                    {% csrf_token %}
+                                                    <button class="button2" type="submit" name="tracker"
+                                                            value="Geplant">
+                                                        Geplant
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <li>No books yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </main>
+        </div>
+    </div>
+    <footer id="footer">
+        <ul>
+            <li>Danke fürs Vorbeischauen! 👋🏻</li>
+            <li><a href="https://www.tha.de/Service/Impressum.page">Impressum</a></li>
+            <li><a href="https://www.tha.de/Service/Datenschutz.page">Datenschutz</a></li>
+            <li><a href="mailto:weesslena@gmail.com;kathrin.janka@web.de?subject=Booktracker">Kontakt</a></li>
+        </ul>
+    </footer>
+</div>
+<script type="text/javascript" src="/static/js/script.js"></script>
+</body>
+</html>

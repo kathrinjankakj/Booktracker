@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7fa;
+    color: rgba(32, 36, 69, 0.8);
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.navbar {
+    background-color: rgba(32, 36, 69, 0.8);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 1.8em;
+    font-weight: 600;
+    display: flex;
+    flex-direction: row;
+}
+
+.nav-rechts a {
+    color: white;
+    margin-left: 25px;
+    text-decoration: none;
+    font-size: 1em;
+    transition: opacity 0.3s;
+}
+
+.nav-rechts a:hover {
+    opacity: 0.8;
+}
+
+.content {
+    display: flex;
+    flex: 1;
+}
+
+.sidebar, .profile-container, .settings-container {
+    width: 320px;
+    background-color: #fff;
+    padding: 25px;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar h2, .profile-container h1, .settings-container h1 {
+    color: rgba(32, 36, 69, 0.8);
+    font-weight: 600;
+}
+
+.button{
+    background-color: #ffffff;
+    color: black;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+
+.sidebar input, form input select {
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+
+#book-list, #my-books {
+    margin-top: 40px;
+}
+
+.book-item, .profile-item {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.images {
+    max-width: 350px;
+    list-style-type: none;
+}
+
+.button2 {
+    margin: 5px;
+    padding: 8px 12px;
+    border: none;
+    background-color: rgba(32, 36, 69, 0.8);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button2:hover {
+    background-color: rgba(2, 6, 39, 0.8);
+}
+
+footer ul {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 14pt;
+}
+
+footer li {
+    flex-basis: auto;
+    margin: 5px 5%;
+    padding: 5px;
+
+}
+
+footer a {
+    color: rgba(32, 36, 69, 0.8);
+    text-decoration: none;
+    position: absolute;
+}
+
+
+#book-list{
+    display: flex;
+    list-style-type: none;
+    padding: 10px 50px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#book_title, .book_text, .book_progress_buttons{
+    list-style-type: none;
+}
+
+.body{
+    padding: 20px;
+}
+
+.sidebar{
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+}
+
+#book-list li{
+    margin: 10px;
+}
+
+#book-list div{
+      margin: 0 0 50px 0;
+}
+
+.booklayout{
+   display: flex;
+    flex-direction: row;
+}
+.book_detailsp{
+   display: flex;
+    flex-direction: column;
+}
+
+.bücherprofilep{
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+}
+
+.profile-container{
+    height: 500px;
+}
+
+.profile{
+    display: flex;
+    flex-direction: row;
+}
+
+.booklayoutp{
+    display: flex;
+    flex-direction: column;
+}
